@@ -1,0 +1,101 @@
+name: build nginx for windows
+
+# Officical Documentation:
+# https://nginx.org/en/docs/howto_build_on_win32.html
+
+on: 
+  workflow_dispatch:
+    inputs:
+      nginx_version:
+        description: 'version of nginx'
+        required: true
+        default: '1.29.4'
+
+env:
+  output_filename: nginx_win_x64
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+    
+      - name: Checkout
+        uses: actions/checkout@v6.0.1
+        
+      - name: Setup MSVC Developer Command Prompt
+        uses: TheMrMilchmann/setup-msvc-dev@v4.0.0
+        with:
+          arch: x64
+          
+      - name: Setup MSYS2
+        uses: msys2/setup-msys2@v2
+      
+      - name: Clone Source Code
+        run: |
+          c:
+          git clone --branch=release-${{github.event.inputs.nginx_version}} --depth=1 https://github.com/nginx/nginx
+          cd nginx
+          mkdir objs/lib
+          cd objs/lib
+          git clone --branch=pcre2-10.39 --depth=1 https://github.com/PCRE2Project/pcre2
+          git clone --branch=v1.3.1 --depth=1 https://github.com/madler/zlib
+          git clone --branch=openssl-3.0.14 --depth=1 https://github.com/openssl/openssl
+          
+      - name: Configure
+        shell: msys2 {0}
+        run: |
+          cd /c/nginx
+          ./auto/configure \
+          --with-cc=cl \
+          --with-debug \
+          --prefix= \
+          --conf-path=conf/nginx.conf \
+          --pid-path=logs/nginx.pid \
+          --http-log-path=logs/access.log \
+          --error-log-path=logs/error.log \
+          --sbin-path=nginx.exe \
+          --http-client-body-temp-path=temp/client_body_temp \
+          --http-proxy-temp-path=temp/proxy_temp \
+          --http-fastcgi-temp-path=temp/fastcgi_temp \
+          --http-scgi-temp-path=temp/scgi_temp \
+          --http-uwsgi-temp-path=temp/uwsgi_temp \
+          --with-cc-opt=-DFD_SETSIZE=1024 \
+          --with-pcre=objs/lib/pcre2 \
+          --with-zlib=objs/lib/zlib \
+          --with-openssl=objs/lib/openssl \
+          --with-openssl-opt=no-asm \
+          --with-http_ssl_module \
+          --with-stream \
+          --with-stream_ssl_module \
+          --with-stream_ssl_preread_module \
+
+      - name: Make
+        run: |
+          c:
+          cd nginx
+          nmake
+          
+      - name: Process Output Files
+        run: |
+          c:
+          cd nginx
+          xcopy objs\\nginx.exe ${{env.output_filename}}\\
+          xcopy /e conf ${{env.output_filename}}\\conf\\
+          xcopy /e contrib ${{env.output_filename}}\\contrib\\
+          xcopy /e docs\\html ${{env.output_filename}}\\html\\
+          mkdir ${{env.output_filename}}\\logs
+          mkdir ${{env.output_filename}}\\temp
+          ren ${{env.output_filename}} ${{env.output_filename}}-${{github.event.inputs.nginx_version}}
+          
+      - name: Package
+        run: |
+          c:
+          cd nginx
+          tar -c -f ${{env.output_filename}}-${{github.event.inputs.nginx_version}}.tar ${{env.output_filename}}-${{github.event.inputs.nginx_version}}
+      
+      - name: Upload a Build Artifact
+        uses: actions/upload-artifact@v5.0.0
+        with:
+          name: ${{env.output_filename}}-${{github.event.inputs.nginx_version}}.tar
+          path: c:/nginx/${{env.output_filename}}-${{github.event.inputs.nginx_version}}.tar
+

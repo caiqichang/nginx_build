@@ -1,12 +1,12 @@
 # nginx_build
 
-用于自定义编译 Nginx 的工作流。
+GitHub Actions for building Nginx.
 
-- 参考文档
+- Reference Documentation
 
 https://nginx.org/en/docs/howto_build_on_win32.html
 
-- 参数中增加了 stream 模块
+- Additional arguments for `Stream` module
 
 ```
 --with-stream

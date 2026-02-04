@@ -9,7 +9,7 @@ on:
       nginx_version:
         description: 'version of nginx'
         required: true
-        default: '1.29.4'
+        default: '1.28.1'
 
 env:
   output_filename: nginx_win_x64
@@ -20,7 +20,7 @@ jobs:
     steps:
     
       - name: Checkout
-        uses: actions/checkout@v6.0.1
+        uses: actions/checkout@v6.0.2
         
       - name: Setup MSVC Developer Command Prompt
         uses: TheMrMilchmann/setup-msvc-dev@v4.0.0
@@ -94,7 +94,7 @@ jobs:
           tar -c -f ${{env.output_filename}}-${{github.event.inputs.nginx_version}}.tar ${{env.output_filename}}-${{github.event.inputs.nginx_version}}
       
       - name: Upload a Build Artifact
-        uses: actions/upload-artifact@v5.0.0
+        uses: actions/upload-artifact@v6.0.0
         with:
           name: ${{env.output_filename}}-${{github.event.inputs.nginx_version}}.tar
           path: c:/nginx/${{env.output_filename}}-${{github.event.inputs.nginx_version}}.tar

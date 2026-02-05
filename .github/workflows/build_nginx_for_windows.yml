@@ -9,7 +9,7 @@ on:
       nginx_version:
         description: 'version of nginx'
         required: true
-        default: '1.28.1'
+        default: '1.28.2'
 
 env:
   output_filename: nginx_win_x64

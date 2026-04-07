@@ -1,4 +1,4 @@
-name: Build MinGW Toolchain
+name: Build MinGW UCRT (64-bit)
 
 on: workflow_dispatch
 

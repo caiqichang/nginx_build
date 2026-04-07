@@ -4,8 +4,8 @@ set -e
 TARGET=$1
 PREFIX=$2
 
-BINUTILS=binutils-2.42
-GCC=gcc-14.2.0
+BINUTILS=binutils-2.46.0
+GCC=gcc-15.2.0
 MINGW=mingw-w64
 
 echo "=== Building 64-bit MinGW UCRT toolchain for $TARGET ==="

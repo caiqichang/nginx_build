@@ -4,6 +4,8 @@ set -e
 TARGET=$1
 PREFIX=$2
 
+export PATH="$PREFIX/bin:$PATH"
+
 BINUTILS=binutils-2.42
 GCC=gcc-14.2.0
 MINGW=mingw-w64

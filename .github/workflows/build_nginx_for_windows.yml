@@ -9,7 +9,7 @@ on:
       nginx_version:
         description: 'version of nginx'
         required: true
-        default: '1.30.2'
+        default: '1.30.3'
 
 env:
   output_filename: nginx_win_x64
@@ -20,7 +20,7 @@ jobs:
     steps:
     
       - name: Checkout
-        uses: actions/checkout@v6.0.2
+        uses: actions/checkout@v7.0.0
         
       - name: Setup MSVC Developer Command Prompt
         uses: TheMrMilchmann/setup-msvc-dev@v4.0.0
